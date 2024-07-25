@@ -27,13 +27,11 @@ return new class extends Migration
             $table->foreign('empid')
                   ->references('empid')
                   ->on('users')
-                  ->onDelete('cascade')
                   ->onUpdate('cascade');
 
             $table->foreign('educ_level')
                   ->references('lvl_count')
                   ->on('education_level')
-                  ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
     }

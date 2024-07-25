@@ -25,7 +25,6 @@ return new class extends Migration
             $table->foreign('empid')
                   ->references('empid')
                   ->on('users')
-                  ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
     }

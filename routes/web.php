@@ -9,6 +9,8 @@ Route::get('/', function () {
 
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
+Route::get('otp', [LoginController::class, 'showOTPForm'])->name('otp.form');
+Route::post('otp', [LoginController::class, 'verifyOTP'])->name('otp.verify');
 
 Route::get('dashboard', function () {
     return view('dashboard');
