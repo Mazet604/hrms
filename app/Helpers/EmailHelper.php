@@ -36,14 +36,33 @@ class EmailHelper
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = env('MAIL_PORT');
 
+            // Set the default timezone to the Philippines
+            date_default_timezone_set('Asia/Manila');
+
             //Recipients
             $mail->setFrom(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
             $mail->addAddress($to);
 
+            // 5 minute validity of OTP
+            $validUntil = date('h:i A', strtotime('+5 minutes'));
+
             // Content
             $mail->isHTML(true);
-            $mail->Subject = 'Your OTP Code';
-            $mail->Body    = "Do not share with other individuals. This is your OTP code: $otp";
+            $mail->Subject = 'Login Confirmation';
+            $mail->Body    = "
+                <div style='background-color: #f9f9f9; padding: 20px; font-family: Arial, sans-serif; text-align: center;'>
+                    <div style='background-color: white; border-radius: 8px; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);'>
+                        <img src='https://i.imgur.com/YVsL4gX.jpeg' alt='Logo' style='max-width: 300px; margin-bottom: 20px;' />
+                        <p style='color: #888; margin: 0;'>" . date('F d, Y') . "</p>
+                        <h2 style='color: #25336B; margin: 10px 0;'>Your One Time Password</h2>
+                        <p style='color: #c;'>
+                            <strong>Do not share with other individuals. This is your OTP code:</strong> <br>
+                            <span style='font-size: 24px; font-weight: bold;'>$otp</span>
+                        </p>
+                        <p style='color: #25336B; margin: 0; font-weight: bold;'>THIS OTP IS ONLY VALID UNTIL $validUntil</p>
+                    </div>
+                </div>
+            ";
 
             // Enable verbose debug output
             $mail->SMTPDebug = 2;

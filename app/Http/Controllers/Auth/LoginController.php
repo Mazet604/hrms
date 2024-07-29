@@ -21,6 +21,7 @@ class LoginController extends Controller
         $request->validate([
             'emp_user' => 'required|string',
             'emp_pass' => 'required|string',
+            'g-recaptcha-response' => 'required|captcha',
         ]);
 
         $user = User::where('emp_user', $request->emp_user)->first();
@@ -39,6 +40,7 @@ class LoginController extends Controller
                 EmailHelper::sendOTPEmail($user->emp_email, $otp);
                 // Store OTP in session
                 Session::put('otp', $otp);
+                Session::put('otp_expires_at', now()->addMinutes(5));
                 return redirect()->route('otp.form');
             } else {
                 \Log::error('Invalid email address: ' . $user->emp_email);
@@ -70,9 +72,15 @@ class LoginController extends Controller
 
         $otp = $request->otp;
         $storedOtp = Session::get('otp');
+        $otpExpiresAt = Session::get('otp_expires_at');
+
+        if (now()->greaterThan($otpExpiresAt)) {
+            return redirect()->back()->with('error', 'OTP has expired.');
+        }
 
         if ($otp === $storedOtp) {
             Session::forget('otp');
+            Session::forget('otp_expires_at');
             return redirect()->intended('dashboard');
         } else {
             return redirect()->back()->with('error', 'Invalid OTP.');
